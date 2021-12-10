@@ -81,6 +81,7 @@ app.post('/verify-code', (req, res) => {
 // create a new parking session, validate via the temp authtoken
 app.post('/parking-session', (req, res) => {
     if (!req.body.auth_token) res.status(401).send('No auth_token provided');
+    if (!req.body.amount || !req.body.license_plate) res.status(422).send('Missing required fields.');
     // check for auth_token before creating
     base('Users').select({
         view: 'Grid view',
@@ -95,9 +96,26 @@ app.post('/parking-session', (req, res) => {
             return;
         }
         const items = records.map(rec => rec.fields);
-        res.json(items);
+        // create new session data
+        base('Parking_Sessions').create([
+            {
+              "fields": {
+                  "license_plate": req.body.license_plate,
+                  "amount": req.body.amount,
+                  "location_code": req.body.location_code,
+                  "user_phone": items[0].phone
+              }
+            }
+          ], (err, records) => {
+            if (err) {
+              console.error(err);
+              res.json(err);
+              return;
+            }
+            const createdItem = records.map(rec => rec.fields);
+            res.status(201).json(createdItem);
+          });
     });
-
 });
 
 
