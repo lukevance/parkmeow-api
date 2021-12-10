@@ -11,9 +11,11 @@ const Airtable = require('airtable');
 const base = new Airtable({apiKey: airtableKey}).base(airtableBaseID);
 
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 3000;
 
+app.use(cors());
 app.use(express.json());
 
 function getRandomInt(min, max) {
