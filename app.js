@@ -36,7 +36,7 @@ app.post('/send-code', (req, res) => {
              .create({to: req.body.phone, channel: 'sms'})
              .then(verification => {
                  console.log(verification.status);
-                 res.send(`you are: ${verification.status}`);
+                 res.json({status: verification.status});
              });    
         } else {
             throw 'No phone number provided!'
